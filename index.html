@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amanda Gheana - Statistician & Creative Specialist</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Import Map to handle React modules in the browser -->
+    <script type="importmap">
+        {
+            "imports": {
+                "react": "https://esm.sh/react@18.2.0",
+                "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+                "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react"
+            }
+        }
+    </script>
+    
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* Custom scrollbar for the modal */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans selection:bg-blue-200">
+    <div id="root"></div>
+
+    <!-- Your React Application Logic -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            Video, PenTool, BarChart, Mail, ExternalLink, Download, 
+            ChevronDown, Linkedin, Globe, PlayCircle, FileText, 
+            Image as ImageIcon, Instagram, Youtube, X, 
+            Link as LinkIcon, ChevronLeft, ChevronRight, Clock, Calendar 
+        } from 'lucide-react';
+
+        // --- HELPER: Extract YouTube Thumbnail ---
+        const getYouTubeThumbnail = (url) => {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            const videoId = (match && match[2].length === 11) ? match[2] : null;
+            return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+        };
+
+        // --- DATA CONFIGURATION ---
+        // NOTE: 'image' paths use relative linking (thumbnails/name.png) so they work on GitHub Pages
+        const portfolioItems = [
+            // --- VIDEO ITEMS ---
+            {
+                id: 1,
+                title: "National Economic Census 2026",
+                category: "Video",
+                role: "Editor & Director",
+                desc: "Promotional video for the National Economic Census. Edited and directed with a fun style to attract viewers, featuring eye-catching subtitles. Gained 40K+ views.",
+                fullDesc: "This content was made to promote the National Economic Census in Indonesia. I participated in editing and directing the video. I edited the video with the sense of attracting the viewers to see the event as a fun yet important census by applying some of the video editing tricks and putting in eye-catching subtitles. This video gained about 40K++ views on the post.",
+                link: "https://www.instagram.com/reel/DErJmkeSk6P/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+                type: "custom-image",
+                image: "thumbnails/sensus-ekonomi.png", 
+                date: "Apr 9, 2025",
+                skills: ["Video Editing & Production", "Adobe Premiere Pro", "Adobe After Effects"]
+            },
+            {
+                id: 2,
+                title: "Susenas March 2025 Promotion",
+                category: "Video",
+                role: "Scriptwriter, Videographer, Editor",
+                desc: "Promotional content for the Social Economic Survey (SUSENAS). Tailored fully from script-writing to editing. Achieved a 300% increase in views (3,000+).",
+                fullDesc: "This content was made to promote the Social Economic Survey (SUSENAS) of BPS-Statistics. I practically tailored the content fully from script-writing, directing and editing the video. This content gained 3,000+ views, which, even though it looks small, is considered a 300% increase since the account only gained about 500-1000 views before.",
+                link: "https://www.instagram.com/reel/DFwzmiWSczv/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+                type: "custom-image",
+                image: "thumbnails/susenas-2025.png",
+                date: "Mar 15, 2025",
+                skills: ["Video Editing & Production", "Adobe Premiere Pro", "Adobe After Effects", "Scriptwriting"]
+            },
+            {
+                id: 3,
+                title: "Majene Regency GDRP Expenditure",
+                category: "Video",
+                role: "Videographer, Editor, Scriptwriter",
+                desc: "Socialization of GDRP Expenditure Reports. Features dolly zoom effects, sound design, and punchlines to help the audience understand the report contents.",
+                fullDesc: "This project was made to socialise Majene Regency's GDRP Expenditure Reports. I worked on the scriptwriting for this project, so the audience could understand what is inside the reports and engage to see the full report on the web. I edited the video using Premiere Pro to produce an engaging video with lots of dolly zoom effects, sound design, and punchlines following the script.",
+                link: "https://www.instagram.com/reel/DJECxGUzMEB/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA==",
+                type: "custom-image",
+                image: "thumbnails/gdrp-expenditure.png",
+                date: "Feb 20, 2025",
+                skills: ["Adobe Premiere Pro", "Video Editing", "Videography", "Video Ad Campaign"]
+            },
+            {
+                id: 5,
+                title: "Majene Regency GDRP Reports",
+                category: "Video",
+                role: "Videographer & Editor",
+                desc: "Animated visualization of GDRP Reports opening on various devices (Mac, iPhone, iPad) to demonstrate access methods using After Effects.",
+                fullDesc: "This project was made to socialize Majene Regency's GDRP Reports. I edited the video using After Effects and Premiere Pro to show the audience what is inside the reports. The client also wanted to show how to access the publication on various devices, so I animated the reports as they opened on the Mac, iPhone, and iPad.",
+                link: "https://www.instagram.com/reel/DIa08wuShyY/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+                type: "custom-image",
+                image: "thumbnails/gdrp-reports.png",
+                date: "Jan 10, 2025",
+                skills: ["Adobe After Effects", "Adobe Premiere Pro", "Video Editing & Production"]
+            },
+            {
+                id: 6,
+                title: "2024 Statistical Publications",
+                category: "Video",
+                role: "Editor, Scriptwriter, Director",
+                desc: "Promotional content for 2024 BPS publications. Features blurred zoom, vertigo effects, and hooks to keep viewers engaged. Gained 5K+ views (500% increase).",
+                fullDesc: "This promotional content was made to promote publications that have been published by BPS-statistics Majene Regency during 2024. The content was made with a hook that attracts the viewers to see past the intro and get the info about where to access the publication. Then, a lot of video editing tricks such as blurred zoom, eye-catching subtitles, and vertigo effect were also applied to keep the viewers engaged. The content gained 5K+ views, which is a 500% increase over the usual content posted by the account before.",
+                link: "https://www.instagram.com/reel/DEOlxgUSW40/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+                type: "custom-image",
+                image: "thumbnails/stat-pubs-2024.png",
+                date: "Dec 5, 2024",
+                skills: ["Video Editing & Production", "Adobe After Effects", "Adobe Premiere Pro", "Scriptwriting"]
+            },
+            {
+                id: 4,
+                title: "Freshman Orientation After Movie",
+                category: "Video",
+                role: "Editor & Videographer",
+                desc: "Analogue-style documentation of the college orientation program, designed to enhance the emotional vibe and help students memorize their journey.",
+                fullDesc: "This project is one of the projects I worked on while I was a college student. The point of the project was to engage the audience to memorize their journey through the orientation program at campus. So, I approached the video with an analogue video style, which enhanced the emotional vibe.",
+                link: "https://youtu.be/vH_pzodfabo?si=2ZniQGPw3bgGKvIs",
+                type: "youtube",
+                date: "Sep 1, 2022",
+                skills: ["Adobe Premiere Pro", "Video Editing & Production"]
+            },
+            {
+                id: 8,
+                title: "Level 8 Campaign (Janine Freuling)",
+                category: "Video",
+                role: "Video Editor",
+                desc: "Commercial storytelling video for the Black Hegant product from Level8, focusing on product usage and narrative flow.",
+                fullDesc: "One of the videos I worked on for Black Hegant Product. I edited this video remotely for Janine Freuling's YouTube channel, focusing on smooth product integration and storytelling.",
+                link: "https://youtu.be/gKzfRBslKBs?t=467",
+                type: "youtube",
+                date: "Aug 15, 2025",
+                skills: ["Capcut", "Sound Design", "Storytelling"]
+            },
+            {
+                id: 7,
+                title: "Short Movie PKL 62: Part 2",
+                category: "Video",
+                role: "Video Editor",
+                desc: "Narrative short movie project focusing on color grading and sound design using DaVinci Resolve.",
+                fullDesc: "A short movie project for PKL 62. My role focused on editing, color grading, and sound design to create a cinematic atmosphere.",
+                link: "https://youtu.be/kXepS95jDmQ",
+                type: "youtube",
+                date: "Jul 20, 2023",
+                skills: ["DaVinci Resolve", "Sound Design", "Color Grading"]
+            },
+            // --- DESIGN / PUBLICATION ITEMS ---
+            {
+                id: 9,
+                title: "Publikasi Analisis Isu Terkini",
+                category: "Design",
+                role: "Author & Layouter",
+                desc: "First regency-level publication of its kind. Layout created from scratch using Adobe InDesign. Includes comprehensive articles on poverty and economic conditions in Majene.",
+                fullDesc: "Since Publikasi Analisis Isu Terkini has yet deliverables in Kabupaten/Kota Level, Kabupaten Majene became the first BPS in regency level to release the publication. So, the layouting for this publication start from zero. Beside layouting the publication, I also manage to write two article about Majene poverty and economic condition and put each as a comprehensive article to showcase the strenght, weakness, challenge that Majene face as a regency.",
+                link: "https://majenekab.bps.go.id/id/publication/2025/09/10/8e7b756d6faa989b514f9568/analisis-isu-terkini-kajian-pertumbuhan-ekonomi-dan-pembangunan-manusia-kabupaten-majene-tahun-2025.html",
+                type: "document",
+                date: "Sep 10, 2025",
+                skills: ["Statistical Reporting", "Adobe Indesign", "Adobe Illustrator"]
+            },
+            {
+                id: 10,
+                title: "National Nutrition Day Infographic",
+                category: "Design",
+                role: "Graphic Designer & Scriptwriter",
+                desc: "Infographic highlighting National Nutrition Day to inform the audience about calorie intake in Majene. Created using Adobe InDesign.",
+                fullDesc: "This post made to highlight the Hari Gizi Nasional and to inform the audience about calories intake of people in Majene.",
+                link: "https://www.instagram.com/p/DFPITEZSzZ4/?utm_source=ig_web_copy_link&igsh=dGpvOTRvenBycXoz",
+                type: "image",
+                date: "Jan 25, 2025",
+                skills: ["Adobe Indesign"]
+            },
+            {
+                id: 11,
+                title: "Kartini Day Gender Index",
+                category: "Design",
+                role: "Graphic Designer & Scriptwriter",
+                desc: "Visual post highlighting women's political and economic participation in Majene based on the Gender Index. Created using Adobe InDesign.",
+                fullDesc: "This post was made to highlight woman participation in majene politically and economically from Indeks Gender.",
+                link: "https://www.instagram.com/p/DIs-RkqSSFe/?utm_source=ig_web_copy_link&igsh=MTV4dzB5NHQzejZz",
+                type: "image",
+                date: "Apr 21, 2025",
+                skills: ["Adobe Indesign", "Scriptwriting"]
+            },
+            {
+                id: 12,
+                title: "Publikasi Inkesra Kota Sawahlunto 2024",
+                category: "Design",
+                role: "Graphic Designer",
+                desc: "Infographic design for the Public Welfare Indicator (Inkesra) of Sawahlunto City 2024. Created using Canva.",
+                fullDesc: "Working on Infografis for Inkesra Kota Sawahlunto 2024.",
+                link: "https://www.canva.com/design/DAGzHgDO3Z4/9sj4-xqnUoqVAjO-ar7Kvw/edit?ui=eyJEIjp7IlAiOnsiQiI6ZmFsc2V9fX0",
+                type: "image",
+                date: "Nov 15, 2024",
+                skills: ["Canva"]
+            }
+        ];
+
+        const experiences = [
+            {
+                company: "BPS Kabupaten Majene",
+                role: "Statistician, Video Editor & Graphic Designer",
+                period: "Dec 2024 - Present",
+                location: "Majene, Indonesia",
+                points: [
+                    "Integrating technical Statistician tasks in the Balance Sheet and Statistical Analysis (Nerwilis) team with storytelling and data dissemination skills, including simplifying and adapting communication for the general public regarding statistical data.",
+                    "Videographer and Video Editor for the 2026 Economic Census promotional video.",
+                    "Produced socialization videos for activities and publication releases (Susenas March 2025, GRDP Release, and Expenditure GRDP Release).",
+                    "Produced content designs for major holiday celebrations (National Nutrition Day, Kartini Day).",
+                    "Author and layouter for \"Current Issues Analysis\" Publication by the Nerwilis Team.",
+                    "Provided social media templates and management aligned with the Public Relations team's work allocation."
+                ]
+            },
+            {
+                company: "Upwork (Freelance)",
+                role: "Freelance Video Editor",
+                period: "Mar 2025 - Oct 2025",
+                location: "Remote",
+                points: [
+                    "Remote video editing services.",
+                    "Completed five Level8 Brand Integration videos for Janine Freuling (Youtube) by crafting storytelling from Level8 product usage footage."
+                ]
+            },
+            {
+                company: "Offline / Seasonal",
+                role: "Freelance Graphic Designer & Video Editor",
+                period: "Jan 2023 - Dec 2024",
+                location: "Jakarta, Indonesia",
+                points: [
+                    "Volunteer graphic design and video editing for community content on Instagram and Twitter.",
+                    "Media partnering with Bugs Favorite (music streaming platform) in social media content to promote platform usage at Golden Disc Awards 2024, Jakarta.",
+                    "Seasonal graphic design for unofficial merchandise with several communities."
+                ]
+            },
+            {
+                company: "Politeknik Statistika STIS",
+                role: "Video Editor & Documentation Publication Team",
+                period: "Jan 2022 - Dec 2024",
+                location: "Indonesia",
+                points: [
+                    "Implemented various video editing skills while strengthening teamwork and communication roles.",
+                    "Fast turnover specialist as PKKMB Polstat STIS committee, editing impression and documentation videos within 24 hours.",
+                    "Main Editor for PKKMB 2022 After Movie.",
+                    "Video Editor for Grand Opening & Short Movie PKL 62.",
+                    "Contributed to the Student Senate Pubdok Division 2022-2023."
+                ]
+            }
+        ];
+
+        const skills = [
+            { name: "Adobe Premiere Pro", level: 95 },
+            { name: "Adobe After Effects", level: 85 },
+            { name: "DaVinci Resolve", level: 80 },
+            { name: "Data Storytelling", level: 90 },
+            { name: "Graphic Design (Ai/Ps)", level: 85 },
+            { name: "Statistical Reporting", level: 90 },
+        ];
+
+        function App() {
+            const [filter, setFilter] = useState('All');
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+            const [selectedProject, setSelectedProject] = useState(null);
+
+            const filteredItems = filter === 'All' 
+                ? portfolioItems 
+                : portfolioItems.filter(item => item.category === filter);
+
+            const scrollToSection = (id) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+                setIsMenuOpen(false);
+            };
+
+            const openProject = (project) => {
+                setSelectedProject(project);
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            };
+
+            const closeProject = () => {
+                setSelectedProject(null);
+                document.body.style.overflow = 'auto';
+            };
+
+            const navigateProject = (direction) => {
+                if (!selectedProject) return;
+                const currentIndex = filteredItems.findIndex(p => p.id === selectedProject.id);
+                let nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+                
+                if (nextIndex >= filteredItems.length) nextIndex = 0;
+                if (nextIndex < 0) nextIndex = filteredItems.length - 1;
+                
+                setSelectedProject(filteredItems[nextIndex]);
+            };
+
+            const copyLink = (link) => {
+                navigator.clipboard.writeText(link);
+            };
+
+            // Helper to render thumbnail content
+            const renderThumbnail = (item, isSmall = false) => {
+                if (item.type === 'custom-image' && item.image) {
+                    return (
+                        <>
+                            <img 
+                                src={item.image} 
+                                alt={item.title} 
+                                className="w-full h-full object-cover" 
+                                onError={(e) => {
+                                    if (!isSmall) e.target.src='https://placehold.co/600x400?text=Image+Not+Found';
+                                }}
+                            />
+                            <div className={`absolute inset-0 bg-black/20 flex items-center justify-center ${isSmall ? 'opacity-100' : ''}`}>
+                            </div>
+                        </>
+                    );
+                } else if (item.type === 'youtube') {
+                    const thumb = getYouTubeThumbnail(item.link);
+                    return (
+                        <>
+                            <img src={thumb} alt={item.title} className="w-full h-full object-cover" />
+                            <div className={`absolute inset-0 bg-black/20 flex items-center justify-center ${isSmall ? 'opacity-100' : ''}`}>
+                                <Youtube size={isSmall ? 24 : 48} className="text-white opacity-80" />
+                            </div>
+                        </>
+                    );
+                } else if (item.type === 'instagram') {
+                    return (
+                        <div className="w-full h-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 flex items-center justify-center">
+                            <div className="text-white flex flex-col items-center opacity-80">
+                                <Instagram size={isSmall ? 24 : 48} />
+                            </div>
+                        </div>
+                    );
+                } else {
+                    return (
+                        <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                            {item.category === 'Design' ? <ImageIcon className="text-slate-400" size={isSmall ? 24 : 48} /> : <FileText className="text-slate-400" size={isSmall ? 24 : 48} />}
+                        </div>
+                    );
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-blue-200">
+                    
+                    {/* NAVIGATION */}
+                    <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50 border-b border-slate-100">
+                        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between h-16 items-center">
+                                <div className="flex-shrink-0 flex items-center gap-2">
+                                    <span className="font-bold text-xl tracking-tight text-slate-900">Amanda <span className="text-blue-600">Gheana</span></span>
+                                </div>
+                                
+                                {/* Desktop Menu */}
+                                <div className="hidden md:flex space-x-8">
+                                    {['Portfolio', 'Experience'].map((item) => (
+                                        <button 
+                                            key={item}
+                                            onClick={() => scrollToSection(item.toLowerCase())}
+                                            className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors"
+                                        >
+                                            {item}
+                                        </button>
+                                    ))}
+                                    <button 
+                                        onClick={() => scrollToSection('contact')}
+                                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
+                                    >
+                                        Contact Me
+                                    </button>
+                                </div>
+
+                                {/* Mobile menu button */}
+                                <div className="md:hidden flex items-center">
+                                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-600 hover:text-blue-600 p-2">
+                                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Mobile Menu Dropdown */}
+                        {isMenuOpen && (
+                            <div className="md:hidden bg-white border-t border-slate-100 py-2">
+                                {['Portfolio', 'Experience', 'Contact'].map((item) => (
+                                    <button 
+                                        key={item}
+                                        onClick={() => scrollToSection(item.toLowerCase())}
+                                        className="block w-full text-left px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-blue-600 font-medium"
+                                    >
+                                        {item}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </nav>
+
+                    {/* PORTFOLIO SECTION (First Section) */}
+                    <section id="portfolio" className="pt-32 pb-20 px-4 bg-white min-h-[80vh] flex flex-col justify-center">
+                        <div className="max-w-6xl mx-auto w-full">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Selected Portfolio</h2>
+                                <p className="text-slate-600 max-w-2xl mx-auto">
+                                    A collection of published video editing, data visualization, and graphic design works.
+                                </p>
+                            </div>
+
+                            {/* Filters */}
+                            <div className="flex flex-wrap justify-center gap-2 mb-12">
+                                {['All', 'Video', 'Design'].map((cat) => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setFilter(cat)}
+                                        className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                                            filter === cat 
+                                                ? 'bg-slate-900 text-white shadow-lg ring-2 ring-slate-900 ring-offset-2' 
+                                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {filteredItems.map((item) => (
+                                    <div 
+                                        key={item.id} 
+                                        onClick={() => openProject(item)}
+                                        className="group bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                                    >
+                                        {/* Thumbnail Area */}
+                                        <div className="aspect-video relative overflow-hidden flex items-center justify-center bg-slate-50">
+                                            {renderThumbnail(item)}
+                                            
+                                            {/* Hover Overlay */}
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm z-10">
+                                                <span className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-full font-bold text-sm">
+                                                    View Details
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <span className={`text-xs font-bold uppercase tracking-wider ${item.category === 'Design' ? 'text-purple-600' : 'text-blue-600'}`}>{item.category}</span>
+                                                <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">{item.role}</span>
+                                            </div>
+                                            <h3 className="font-bold text-xl text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">{item.title}</h3>
+                                            <p className="text-slate-600 text-sm line-clamp-3 leading-relaxed">
+                                                {item.desc}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* EXPERIENCE SECTION */}
+                    <section id="experience" className="py-20 px-4 bg-slate-50">
+                        <div className="max-w-4xl mx-auto w-full">
+                            <div className="flex items-center gap-3 mb-12">
+                                <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
+                                    <BarChart size={24} />
+                                </div>
+                                <h2 className="text-3xl font-bold text-slate-900">Professional Experience</h2>
+                            </div>
+
+                            <div className="space-y-10 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                                {experiences.map((exp, index) => (
+                                    <div key={index} className="relative flex items-start justify-between md:justify-normal md:odd:flex-row-reverse group">
+                                        <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-50 group-hover:bg-blue-500 group-hover:text-white transition-colors shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 text-blue-500 mt-1">
+                                            <div className="w-2.5 h-2.5 bg-current rounded-full"></div>
+                                        </div>
+                                        
+                                        <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                                            <div className="mb-4">
+                                                <h3 className="font-bold text-xl text-slate-900 leading-tight mb-1">{exp.role}</h3>
+                                                <div className="text-blue-600 font-medium">{exp.company}</div>
+                                                <div className="flex items-center gap-2 text-xs text-slate-500 mt-2 font-medium">
+                                                    <span className="bg-slate-100 px-2 py-1 rounded">{exp.period}</span>
+                                                    <span>•</span>
+                                                    <span>{exp.location}</span>
+                                                </div>
+                                            </div>
+                                            <ul className="list-disc pl-5 space-y-2 text-slate-600 text-sm leading-relaxed marker:text-blue-400">
+                                                {exp.points.map((point, idx) => (
+                                                    <li key={idx}>{point}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* SKILLS SECTION */}
+                    <section className="py-20 px-4 bg-slate-900 text-white">
+                        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+                            <div>
+                                <h2 className="text-3xl font-bold mb-6">Technical Expertise</h2>
+                                <p className="text-slate-400 mb-8 text-lg leading-relaxed">
+                                    Combining deep statistical understanding with technical mastery of industry-standard creative software.
+                                </p>
+                                <div className="flex flex-wrap gap-3">
+                                    {['Data Analysis', 'Video Editing', 'Motion Graphics', 'Public Speaking', 'Team Leadership', 'Social Media Mgmt'].map((skill) => (
+                                        <span key={skill} className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700">
+                                            {skill}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-6">
+                                {skills.map((skill) => (
+                                    <div key={skill.name}>
+                                        <div className="flex justify-between mb-2">
+                                            <span className="font-medium">{skill.name}</span>
+                                            <span className="text-slate-400 text-sm">{skill.level}%</span>
+                                        </div>
+                                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-blue-500 rounded-full" 
+                                                style={{ width: `${skill.level}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* FOOTER */}
+                    <footer id="contact" className="bg-slate-50 py-8 px-4 border-t border-slate-200">
+                        <div className="max-w-4xl mx-auto text-center text-slate-500 text-sm">
+                            <p>&copy; 2025 Amanda Chairunisa Gheana Putri.</p>
+                        </div>
+                    </footer>
+
+                    {/* PROJECT MODAL */}
+                    {selectedProject && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={closeProject}></div>
+                            
+                            {/* Navigation Buttons (OUTSIDE THE CARD) */}
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); navigateProject('prev'); }}
+                                className="fixed left-4 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all z-[110] hidden md:flex items-center justify-center group"
+                            >
+                                <ChevronLeft size={32} className="group-hover:-translate-x-1 transition-transform" />
+                            </button>
+                            
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); navigateProject('next'); }}
+                                className="fixed right-4 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all z-[110] hidden md:flex items-center justify-center group"
+                            >
+                                <ChevronRight size={32} className="group-hover:translate-x-1 transition-transform" />
+                            </button>
+
+                            <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col z-[105]">
+                                
+                                {/* Header Actions */}
+                                <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                                    <h2 className="text-lg font-bold text-slate-900 line-clamp-1 flex-1 mr-4">{selectedProject.title}</h2>
+                                    <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={() => copyLink(selectedProject.link)} 
+                                            className="text-slate-500 hover:text-blue-600 text-sm font-medium flex items-center gap-1"
+                                        >
+                                            Copy link <LinkIcon size={14} />
+                                        </button>
+                                        <button onClick={closeProject} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                                            <X size={20} className="text-slate-500" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Body Content */}
+                                <div className="p-6 sm:p-8">
+                                    <div className="grid md:grid-cols-3 gap-8">
+                                        
+                                        {/* Left Column: Text Info */}
+                                        <div className="md:col-span-2 space-y-6">
+                                            <div>
+                                                <div className="text-sm text-slate-500 mb-1">My role</div>
+                                                <div className="text-slate-900 font-medium">{selectedProject.role}</div>
+                                            </div>
+
+                                            <div>
+                                                <div className="text-sm text-slate-500 mb-2">Project description</div>
+                                                <p className="text-slate-700 leading-relaxed whitespace-pre-line">
+                                                    {selectedProject.fullDesc || selectedProject.desc}
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                <div className="text-sm text-slate-500 mb-2">Skills and deliverables</div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {selectedProject.skills?.map(skill => (
+                                                        <span key={skill} className="px-3 py-1 bg-slate-100 text-slate-700 text-sm rounded-full">
+                                                            {skill}
+                                                        </span>
+                                                    )) || <span className="text-slate-400 text-sm">No specific skills listed</span>}
+                                                </div>
+                                            </div>
+
+                                            <div className="text-xs text-slate-400 pt-4">
+                                                Published on {selectedProject.date || "Unknown Date"}
+                                            </div>
+                                        </div>
+
+                                        {/* Right Column: Media & Link */}
+                                        <div className="md:col-span-1 space-y-6">
+                                            <div className="bg-slate-50 rounded-xl overflow-hidden border border-slate-100 aspect-video md:aspect-auto md:h-48 relative group cursor-pointer" onClick={() => window.open(selectedProject.link, '_blank')}>
+                                                {renderThumbnail(selectedProject)}
+                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+                                                    <ExternalLink className="text-white drop-shadow-md" size={32} />
+                                                </div>
+                                            </div>
+                                            
+                                            <a 
+                                                href={selectedProject.link} 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                className="flex items-center justify-between w-full p-4 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all group"
+                                            >
+                                                <div className="flex flex-col">
+                                                    <span className={`text-sm font-bold ${selectedProject.type === 'instagram' ? 'text-pink-600' : 'text-blue-600'}`}>
+                                                        {selectedProject.type === 'instagram' ? 'Instagram' : selectedProject.type === 'youtube' ? 'YouTube' : 'External Link'}
+                                                    </span>
+                                                    <span className="text-xs text-slate-400 truncate max-w-[150px]">Click to view</span>
+                                                </div>
+                                                <ExternalLink size={18} className="text-slate-400 group-hover:text-blue-600" />
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div className="h-px bg-slate-100 my-8" />
+
+                                    {/* "More by Amanda" Section */}
+                                    <div>
+                                        <div className="text-sm font-medium text-slate-900 mb-4">More by <span className="text-blue-600">Amanda Chairunisa Gheana P.</span></div>
+                                        <div className="grid grid-cols-3 gap-4">
+                                            {filteredItems
+                                                .filter(p => p.id !== selectedProject.id)
+                                                .sort(() => 0.5 - Math.random()) // Randomize suggestions
+                                                .slice(0, 3)
+                                                .map(p => (
+                                                    <div key={p.id} onClick={() => setSelectedProject(p)} className="cursor-pointer group">
+                                                        <div className="aspect-video rounded-lg overflow-hidden bg-slate-100 relative mb-2">
+                                                            {renderThumbnail(p, true)}
+                                                        </div>
+                                                        <div className="text-xs font-medium text-slate-900 line-clamp-2 group-hover:text-blue-600 leading-tight">
+                                                            {p.title}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
